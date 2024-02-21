@@ -1,24 +1,46 @@
 import epdx
+import json
 
 from shared import get_epds, get_folder, get_full_epd_str
 
 
-def to_epdx():
+def to_epdx(_epd_id = None):
     """Get EPDs from Ökobau and turn them into EPDx"""
 
-    data = get_epds()
     folder = get_folder(__file__, "epdx_data")
 
-    for _epd in data.get("data"):
-        print(f"\nEPD {_epd.get('uuid')}")
+    raw_folder = get_folder(__file__, "epd_raw_data")
+
+    epd_id = []
+
+    if _epd_id == None:
+        data = get_epds()
+
+        for _epd in data.get("data"):
+            epd_id.append(_epd.get('uuid'))
+    
+    else:
+        if isinstance(_epd_id, list):
+            epd_id = _epd_id
+        else:
+            epd_id.append(_epd_id)
+
+    
+    for _epd in epd_id:
+        print(f"\nEPD {_epd}")
 
         # Get full EPD from Ökobau
-        epd_str = get_full_epd_str(_epd.get("uuid"))
+        epd_str = get_full_epd_str(_epd)
+
+        # save full EPD to disk
+        ((raw_folder / f"{_epd}.epd.json")
+         .write_text(json.dumps(epd_str, indent=4)))
+
 
         # Turn EPD into EPDx JSON string that can be saved to disk.
         epdx_str = epdx.convert_ilcd(epd_str,
                                      as_type='str')
-        ((folder / f"{_epd.get('uuid')}.epdx.json")
+        ((folder / f"{_epd}.epdx.json")
          .write_text(epdx_str))
 
         # Turn EPD into EPDx dict
@@ -35,4 +57,4 @@ def to_epdx():
 
 
 if __name__ == "__main__":
-    to_epdx()
+    to_epdx("2f4bd2bc-2916-4411-80d4-9c3dcead6301")
