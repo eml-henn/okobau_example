@@ -38,8 +38,8 @@ def to_epdx(_epd_id = None):
 
 
         # Turn EPD into EPDx JSON string that can be saved to disk.
-        epdx_str = epdx.convert_ilcd(epd_str,
-                                     as_type='str')
+        epdx_str = epdx.convert_ilcd(data = epd_str,
+                                     as_type= str)
         ((folder / f"{_epd}.epdx.json")
          .write_text(epdx_str))
 
@@ -50,11 +50,11 @@ def to_epdx(_epd_id = None):
 
         # Turn EPD into an EPDx Pydantic Class
         epdx_pydantic = epdx.convert_ilcd(epd_str,
-                                          as_type='pydantic')
+                                          as_type=epdx.EPD)
         print('\nEPDx Pydantic')
         print(epdx_pydantic)
         print("---------\n")
 
 
 if __name__ == "__main__":
-    to_epdx("d58a0a7c-973c-4631-a46f-2f2287757c91")
+    to_epdx("c23b2987-776d-4d55-91c7-5f2a0f2c50f1")
