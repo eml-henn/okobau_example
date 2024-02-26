@@ -4,9 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-requests = "*"
-epdx = "==1.1.5"
-pydantic = "*"
+mysql = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 
