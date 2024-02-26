@@ -9,8 +9,7 @@ from shared import get_epds, get_folder, get_full_epd_str
 DB_NAME = 'henn_directus'
 DB_TABLE = "henn_directus.products"
 
-epd_id = "c23b2987-776d-4d55-91c7-5f2a0f2c50f1"
-
+epd_id = "c445279d-1358-4e36-9f0d-7ecfe8abda81"
 
 def export_as_epdx(_epd_id):
     """query Okobau for an epd with a given id, and converts it to 
@@ -67,38 +66,46 @@ def update_table(_epd_id, connection):
 
     epdx = export_as_epdx(_epd_id)[_epd_id]
     epdx_data = json.loads(epdx)
-    print("EPDX data:")
-    print(epdx_data)
+#    print("EPDX data:")
+#    print(epdx_data)
     epdx_name = epdx_data['name']
-    print("###################################")
-    print("epdx name is {0}".format(epdx_name))
+#    print("###################################")
+#    print("epdx name is {0}".format(epdx_name))
 
     query_data = {'date' : datetime.now().date(), 'name' : epdx_name, 'epd_id' : _epd_id, 'epdx' : epdx }
 
-    print(query_data)
+#    print(query_data)
 
 
     if data_exists():      
-       query_product = "(SELECT * from " + DB_TABLE + " where epd_id = '%s')"
+       query_product = "(SELECT * from " + DB_TABLE + " where epd_id = %s)"
        cursor = connection.cursor()
        cursor.execute(query_product, [_epd_id])
        results = cursor.fetchall()
-       epd_ids = [row[0] for row in results]
-       query_data.update({'ids' : epd_ids})
+       query_data_list = []
+       for row in results:
+           temp_dict = query_data.copy()
+           temp_dict.update({'ids' : row[0]})
+           query_data_list.append(temp_dict)
+    
+#       print(query_data_list)
+       
        cursor.close()
 
-       query = ("INSERT INTO " + DB_TABLE + " (date_created, name, epd_id, epdx) \
-                VALUES( %(date)s, %(name)s, %(epd_id)s, %(epdx)s) \
-                SELECT id, %(ids)s \
-                ON DUPLICATE KEY UPDATE date_updated = %(date)s, name = '%(name)s', \
-                epd_id = '%(epd_id)s', epdx = '%(epdx)s' ")
+       query = ("UPDATE " + DB_TABLE + " SET\
+                date_updated= %(date)s, name= %(name)s, epd_id= %(epd_id)s, epdx= %(epdx)s \
+                WHERE id = %(ids)s")
        
+       cursor = connection.cursor()
+       cursor.executemany(query, query_data_list)
+
+
     else:
         query = ("INSERT INTO " + DB_TABLE + " (date_created, name, epd_id, epdx) \
         VALUES( %(date)s, %(name)s, %(epd_id)s, %(epdx)s)")
     
-    cursor = connection.cursor()
-    cursor.execute(query, query_data)
+        cursor = connection.cursor()
+        cursor.execute(query, query_data)
 
     connection.commit()
     cursor.close()
@@ -110,19 +117,5 @@ cnx = mysql.connector.connect(user='admin', password='sophien21',
                               database=DB_NAME)
     
 update_table(epd_id, cnx)
-
-
-"""
-except mysql.connector.Error as err:
-  if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-    print("Something is wrong with your user name or password")
-  elif err.errno == errorcode.ER_BAD_DB_ERROR:
-    print("Database does not exist")
-  else:
-    print(err)
-else:
-  cnx.close()
-
-"""
 
 cnx.close()
