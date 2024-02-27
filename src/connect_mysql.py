@@ -195,7 +195,8 @@ def update_table(_epd_id, connection):
 
 
 if __name__ == "__main__":
-	epd_id = ["30452630-b12d-43bf-b140-58e0db0ba549", "fdc99ab8-d843-44ec-a66c-92367d244321", "8565038f-5c21-48d7-94cb-958498ba9dd3"]
+	epd_id = ["30452630-b12d-43bf-b140-58e0db0ba549", "fdc99ab8-d843-44ec-a66c-92367d244321", "8565038f-5c21-48d7-94cb-958498ba9dd3", 
+           "6575f9dd-8a50-440c-90df-30608167c739"]
     
 	cnx = mysql.connector.connect(user='admin', password='sophien21', 
                               host='berlin117',
