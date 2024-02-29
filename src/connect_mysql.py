@@ -43,7 +43,7 @@ def export_as_epdx(_epd_id):
             
             output.update({id : epdx_str})
         except:
-           print("id not found")
+           print("id {0} not found".format(id))
            continue
 
     return output
@@ -66,7 +66,10 @@ def update_table(_epd_id, connection):
                 control_cursor.close()
                 return False
 
-    epdx = export_as_epdx(_epd_id)[_epd_id]
+    epdx_output = export_as_epdx(_epd_id)
+    if isinstance(epdx_output, str):  # means it returns an error message
+        return
+    epdx = epdx_output[_epd_id]
     epdx_data = json.loads(epdx)
     epdx_name = epdx_data['name']
 
@@ -195,8 +198,17 @@ def update_table(_epd_id, connection):
 
 
 if __name__ == "__main__":
-	epd_id = ["30452630-b12d-43bf-b140-58e0db0ba549", "fdc99ab8-d843-44ec-a66c-92367d244321", "8565038f-5c21-48d7-94cb-958498ba9dd3", 
-           "6575f9dd-8a50-440c-90df-30608167c739"]
+	epd_id = [
+        "30452630-b12d-43bf-b140-58e0db0ba549", 
+        "fdc99ab8-d843-44ec-a66c-92367d244321", 
+        "8565038f-5c21-48d7-94cb-958498ba9dd3", 
+        "6575f9dd-8a50-440c-90df-30608167c739", 
+        "8565038f-5c21-48d7-94cb-958498ba9dd3", 
+        "1d2b97ed-0f6f-4a6a-acd5-ea13ff23d893", 
+        "d2ae1721-bb2a-4386-9d9f-abb1c774b0a8",
+        "258b377e-ec3b-4e8c-b3fd-dda1eb370f7d", 
+        "6eaddefb-7a0f-43e4-a0cb-8459c26e0947", 
+        "ae5396d9-2952-4eae-b216-17d56758ece0"]
     
 	cnx = mysql.connector.connect(user='admin', password='sophien21', 
                               host='berlin117',
