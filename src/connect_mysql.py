@@ -4,6 +4,7 @@ import epdx
 import json
 from datetime import date, datetime
 import pandas as pd
+import lcax
 
 from shared import get_epds, get_folder, get_full_epd_str
 
@@ -196,9 +197,37 @@ def update_table(_epd_id, connection):
     cursor.close()
 
 
+def updateAssembly(cnx):
+    table= "henn_directus.buildups"
+    query = ("INSERT INTO " + table + " (\
+             date_created, buildup_id, description, \
+             name, unit, parts, classification) "
+             "VALUES( %(date)s, %(buildup_id)s, %(description)s, %(name)s, %(unit)s, %(parts)s, %(classification)s )")
+    
+    parts = {}
+    for part_id, part in lcax.reinforcedConcrete.parts.items():
+        parts.update({part_id : part})
+
+
+    query_data = {
+        'date' : datetime.now().date(),
+        'buildup_id' : lcax.reinforcedConcrete.id,
+        'description' : lcax.reinforcedConcrete.description,
+        'name' : lcax.reinforcedConcrete.name,
+        'unit' : lcax.reinforcedConcrete.unit,
+        'classification' : json.dumps(lcax.reinforcedConcrete.classification),
+        'parts' : json.dumps(parts, default = lambda o : o.__dict__)
+    }
+
+    cursor = cnx.cursor()
+    cursor.execute(query, query_data)
+    cnx.commit()
+    cursor.close()
+    
+
 
 if __name__ == "__main__":
-	epd_id = [
+    epd_id = [
         "30452630-b12d-43bf-b140-58e0db0ba549", 
         "fdc99ab8-d843-44ec-a66c-92367d244321", 
         "8565038f-5c21-48d7-94cb-958498ba9dd3", 
@@ -210,13 +239,16 @@ if __name__ == "__main__":
         "6eaddefb-7a0f-43e4-a0cb-8459c26e0947", 
         "ae5396d9-2952-4eae-b216-17d56758ece0"]
     
-	cnx = mysql.connector.connect(user='admin', password='sophien21', 
+    cnx = mysql.connector.connect(user='admin', password='sophien21', 
                               host='berlin117',
                               database=DB_NAME)
     
-	if not isinstance(epd_id, list):
-		epd_id = [epd_id]
+    if not isinstance(epd_id, list):
+        epd_id = [epd_id]
+
+    for id in epd_id:
+        update_table(id, cnx)
     
-	for id in epd_id:
-		update_table(id, cnx)
-	cnx.close()
+    updateAssembly(cnx)
+    cnx.close()
+
