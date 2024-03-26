@@ -5,6 +5,8 @@ import json
 from datetime import date, datetime
 import pandas as pd
 import lcax
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
 
 from shared import get_epds, get_folder, get_full_epd_str
 
@@ -225,8 +227,81 @@ def updateAssembly(cnx):
     cursor.close()
     
 
+def connect(ids):
+    cnx = mysql.connector.connect(user='admin', password='sophien21', 
+                              host='berlin117',
+                              database=DB_NAME)
+    
+    if not isinstance(ids, list):
+        epd_id = [ids]
+
+    print("connecting with IDs:", ids)
+
+    for id in ids:
+        update_table(id, cnx)
+    
+    updateAssembly(cnx)
+    cnx.close()
+
+def run_script(entry):
+    string = entry.get().replace(" ", ",").replace(";", ",")
+    ids = string.split(",")
+    connect (ids)
+
+def cancel(root):
+    root.destroy()
+
+
+class MyApp(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('Öokobau to HENN MySql')
+
+        label = QLabel('Enter IDs (separated by commas):', self)
+        label.move(10, 10)
+
+        self.textbox = QLineEdit(self)
+        self.textbox.move(10, 30)
+        self.textbox.resize(280, 30)
+
+        okButton = QPushButton('OK', self)
+        okButton.move(10, 70)
+        okButton.clicked.connect(self.run_script)
+
+        cancelButton = QPushButton('Cancel', self)
+        cancelButton.move(100, 70)
+        cancelButton.clicked.connect(self.cancel)
+
+        self.setGeometry(300, 300, 300, 100)
+        self.show()
+
+    def run_script(self):
+        clean_string = " ".join(self.textbox.text().split())
+        string = clean_string.replace(" ", ",").replace(";", ",").replace("\"","").replace(",,",",")
+        ids = string.split(",")
+        connect(ids)
+
+    def cancel(self):
+        sys.exit()
+
+epd_id = [
+        "30452630-b12d-43bf-b140-58e0db0ba549", 
+        "fdc99ab8-d843-44ec-a66c-92367d244321", 
+        "8565038f-5c21-48d7-94cb-958498ba9dd3", 
+        "6575f9dd-8a50-440c-90df-30608167c739", 
+        "8565038f-5c21-48d7-94cb-958498ba9dd3", 
+        "1d2b97ed-0f6f-4a6a-acd5-ea13ff23d893", 
+        "d2ae1721-bb2a-4386-9d9f-abb1c774b0a8",
+        "258b377e-ec3b-4e8c-b3fd-dda1eb370f7d", 
+        "6eaddefb-7a0f-43e4-a0cb-8459c26e0947", 
+        "ae5396d9-2952-4eae-b216-17d56758ece0"]
 
 if __name__ == "__main__":
+    """
     epd_id = [
         "30452630-b12d-43bf-b140-58e0db0ba549", 
         "fdc99ab8-d843-44ec-a66c-92367d244321", 
@@ -238,17 +313,9 @@ if __name__ == "__main__":
         "258b377e-ec3b-4e8c-b3fd-dda1eb370f7d", 
         "6eaddefb-7a0f-43e4-a0cb-8459c26e0947", 
         "ae5396d9-2952-4eae-b216-17d56758ece0"]
-    
-    cnx = mysql.connector.connect(user='admin', password='sophien21', 
-                              host='berlin117',
-                              database=DB_NAME)
-    
-    if not isinstance(epd_id, list):
-        epd_id = [epd_id]
-
-    for id in epd_id:
-        update_table(id, cnx)
-    
-    updateAssembly(cnx)
-    cnx.close()
+    connect(epd_id)
+    """
+    app = QApplication(sys.argv)
+    ex = MyApp()
+    sys.exit(app.exec_())
 
