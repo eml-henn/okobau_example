@@ -1,6 +1,7 @@
 .idea
 .vs
 .vscode
+.venv
 
 src/data
 src/epdx_data
