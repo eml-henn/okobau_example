@@ -4,3 +4,5 @@
 
 src/data
 src/epdx_data
+ignore/
+build/

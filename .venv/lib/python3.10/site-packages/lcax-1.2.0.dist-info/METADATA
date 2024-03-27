@@ -1,0 +1,47 @@
+Metadata-Version: 2.1
+Name: lcax
+Version: 1.2.0
+Requires-Dist: cffi
+Requires-Dist: pydantic >=1.8.2,<2.0.0; extra == 'code-gen'
+Requires-Dist: datamodel-code-generator; extra == 'code-gen'
+Requires-Dist: pytest; extra == 'tests'
+Requires-Dist: pytest-datafixtures; extra == 'tests'
+Requires-Dist: mkdocs-material >=8.1.4,<9.0.0; extra == 'doc'
+Requires-Dist: mdx-include >=1.4.1,<2.0.0; extra == 'doc'
+Provides-Extra: code-gen
+Provides-Extra: tests
+Provides-Extra: doc
+License-File: LICENSE
+License-File: LICENSE
+Summary: LCAx is an open, machine and human-readable data format for exchanging LCA results.
+Home-Page: https://lcax.kongsgaard.eu
+Author: Christian Kongsgaard <christian@kongsgaard.eu>
+Author-email: Christian Kongsgaard <christian@kongsgaard.eu>
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown; charset=UTF-8; variant=GFM
+Project-URL: homepage, https://lcax.kongsgaard.eu
+Project-URL: repository, https://github.com/ocni-dtu/lcax
+Project-URL: documentation, https://lcax.kongsgaard.eu
+
+# LCAx
+
+The goal for LCAx is to make an open, machine and human-readable data format for exchanging LCA results,
+EPD's and assemblies. 
+
+We propose a simple three level data format with information on project, assembly and EPD level,
+written in an open data format and paired with a validator for a more robust and standardized format.
+We intend to create connections to existing tools and API’s.
+
+# Install 
+
+Install Python packages
+
+```bash
+pipenv install --dev
+```
+
+# Local Development
+
+```bash
+mkdocs serve
+```

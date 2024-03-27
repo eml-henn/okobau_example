@@ -11,6 +11,7 @@ pysimplegui = "*"
 epdx = "*"
 requests = "*"
 pyqt5 = "*"
+lcax = "*"
 pyinstaller = "*"
 
 [dev-packages]

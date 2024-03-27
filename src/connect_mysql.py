@@ -5,6 +5,7 @@ import json
 from datetime import date, datetime
 import pandas as pd
 import sys
+import lcax as lcax
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
 
 from shared import get_epds, get_folder, get_full_epd_str
