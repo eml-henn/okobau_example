@@ -5,17 +5,23 @@ import json
 from datetime import date, datetime
 import pandas as pd
 import sys
-import lcax as lcax
+#import lcax as lcax
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
+import os
+from dotenv import load_dotenv, find_dotenv
 
-from shared import get_epds, get_folder, get_full_epd_str
+# Connect the path with your '.env' file name
+load_dotenv("src\epdx.env")
 
-DB_NAME = 'henn_directus'
-DB_TABLE = "henn_directus.products"
+from shared import get_full_epd_str
+
+DB_HOST = os.getenv('DB_HOST')
+DB_NAME = os.getenv('DB_NAME')
+DB_TABLE = os.getenv('DB_TABLE')
+DB_USER = os.getenv('DB_USER')
+DB_PW = os.getenv('DB_PW')
 
 OKOBAU_URL = "https://oekobaudat.de/OEKOBAU.DAT/resource/datastocks/cd2bda71-760b-4fcc-8a0b-3877c10000a8"
-
-
 
 def export_as_epdx(_epd_id):
     """query Okobau for an epd with a given id, and converts it to 
@@ -37,16 +43,26 @@ def export_as_epdx(_epd_id):
         try:
             #gets the full epd data in ilcd format
             epd_str = get_full_epd_str(id)
-
+        except:
+           print("id {0} not found in database".format(id))
+           continue
+        
+        try:
             #converts to epdx formatted json string
             epdx_str = epdx.convert_ilcd(data = epd_str, as_type = str)
 
+        except:
+           print("id {0} could not be converted to epdx".format(id))
+           continue
+        
+        try:
             if isinstance(output, str):
                output = {}
             
             output.update({id : epdx_str})
+            print ("saved id {0} to database".format(id))
         except:
-           print("id {0} not found".format(id))
+           print("id {0} could not be updated".format(id))
            continue
 
     return output
@@ -198,7 +214,7 @@ def update_table(_epd_id, connection):
     connection.commit()
     cursor.close()
 
-
+"""
 def updateAssembly(cnx):
     table= "henn_directus.buildups"
     query = ("INSERT INTO " + table + " (\
@@ -225,11 +241,11 @@ def updateAssembly(cnx):
     cursor.execute(query, query_data)
     cnx.commit()
     cursor.close()
-    
+"""    
 
 def connect(ids):
-    cnx = mysql.connector.connect(user='admin', password='sophien21', 
-                              host='berlin117',
+    cnx = mysql.connector.connect(user=DB_USER, password=DB_PW, 
+                              host=DB_HOST,
                               database=DB_NAME)
     
     if not isinstance(ids, list):
@@ -240,7 +256,7 @@ def connect(ids):
     for id in ids:
         update_table(id, cnx)
     
-    updateAssembly(cnx)
+#    updateAssembly(cnx)
     cnx.close()
 
 def run_script(entry):
@@ -259,7 +275,7 @@ class MyApp(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Öokobau to HENN MySql')
+        self.setWindowTitle('Ökobau to HENN MySql')
 
         label = QLabel('Enter IDs (separated by commas):', self)
         label.move(10, 10)

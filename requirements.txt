@@ -1,0 +1,9 @@
+mysql
+mysql-connector-python
+pandas
+pysimplegui
+epdx==1.1.5
+requests
+pyqt5
+pyinstaller
+python-dotenv

@@ -1,17 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('src/shared.py', '.')]
+datas = [('src\\shared.py', '.')]
 binaries = []
 hiddenimports = []
 tmp_ret = collect_all('requests')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
-tmp_ret = collect_all('lcax')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['src/connect_mysql.py'],
+    ['src\\connect_mysql.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,

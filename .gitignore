@@ -2,8 +2,14 @@
 .vs
 .vscode
 .venv
+.config
+.env
+.wvenv
 
 src/data
 src/epdx_data
 ignore/
 build/
+dist/
+Scripts/
+Lib/
