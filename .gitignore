@@ -13,3 +13,4 @@ build/
 dist/
 Scripts/
 Lib/
+src/epdx.env
