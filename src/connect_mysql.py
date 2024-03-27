@@ -4,7 +4,6 @@ import epdx
 import json
 from datetime import date, datetime
 import pandas as pd
-import lcax
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton
 
